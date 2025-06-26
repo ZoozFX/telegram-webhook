@@ -10,5 +10,3 @@ services:
         value: 7570975386:AAG2Z2myM-w6fN00T7NugvraRPT5Rj9Yjso
       - key: chat_id
         value: -1002799925948
-      - key: secret
-        value: 8D81Yqh4lJbUsqGWpD9zCl1jQubexk
