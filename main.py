@@ -9,9 +9,10 @@ last_data = {}
 
 # تنسيق الرسالة حسب نوع التنبيه
 def build_message(data: dict) -> str:
-    alert_type = data.get("alert", "unknown")
-    if alert_type == "buy_now":
-        return f"""🟢 فتح صفقة جديدة
+    alert_type = data.get("alert", "unknown").lower()
+
+    if alert_type == "buy_now" or alert_type == "sell_now":
+        return f"""{"🟢" if alert_type == "buy_now" else "🔴"} فتح صفقة جديدة
 
 🔹 النوع: {data.get('type', 'N/A')}
 💼 اللوت: {data.get('lot', 'N/A')}
@@ -27,13 +28,13 @@ def build_message(data: dict) -> str:
     elif alert_type == "close_now":
         return f"""🔴 تم إغلاق الصفقة يدويًا
 
-🆔 ID: {data.get('id')}
-🪙 الزوج: {data.get('symbol')}
-📈 السعر: {data.get('price')}
-🔁 النوع: {data.get('type')}"""
+🆔 ID: {data.get('id', 'N/A')}
+🪙 الزوج: {data.get('symbol', 'N/A')}
+📈 السعر: {data.get('price', 'N/A')}
+🔁 النوع: {data.get('type', 'N/A')}"""
 
     else:
-        return f"""📣 تنبيه: {alert_type}
+        return f"""📣 تنبيه: {data.get('alert', 'N/A')}
 📈 الزوج: {data.get('symbol', '؟')}
 💵 السعر: {data.get('price', '?')}"""
 
