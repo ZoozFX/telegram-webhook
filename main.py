@@ -4,12 +4,36 @@ import os
 
 app = FastAPI()
 
-# متغير لحفظ آخر بيانات تنبيه
+# متغير لحفظ آخر رسالة
 last_data = {}
 
-# تنسيق رسالة التليجرام
+# تنسيق الرسالة حسب نوع التنبيه
 def build_message(data: dict) -> str:
-    return f"""📣 تنبيه: {data.get('alert', 'غير معروف')}
+    alert_type = data.get("alert", "unknown")
+    if alert_type == "buy_now":
+        return f"""🟢 فتح صفقة جديدة
+
+🔹 النوع: {data.get('type', 'N/A')}
+💼 اللوت: {data.get('lot', 'N/A')}
+📈 السعر: {data.get('price', 'N/A')}
+🪙 الزوج: {data.get('symbol', 'N/A')}
+
+🎯 TP1: {data.get('tp1', 'N/A')}
+🎯 TP2: {data.get('tp2', 'N/A')}
+🎯 TP3: {data.get('tp3', 'N/A')}
+🛑 وقف خسارة: {data.get('stop', 'N/A')}
+📊 Tickmill: {"✅" if data.get('Tickmill') else "❌"} | XM: {"✅" if data.get('xm') else "❌"}"""
+
+    elif alert_type == "close_now":
+        return f"""🔴 تم إغلاق الصفقة يدويًا
+
+🆔 ID: {data.get('id')}
+🪙 الزوج: {data.get('symbol')}
+📈 السعر: {data.get('price')}
+🔁 النوع: {data.get('type')}"""
+
+    else:
+        return f"""📣 تنبيه: {alert_type}
 📈 الزوج: {data.get('symbol', '؟')}
 💵 السعر: {data.get('price', '?')}"""
 
@@ -22,7 +46,7 @@ async def send_post_to_telegram(request: Request):
     if data.get("secret") != os.getenv("secret"):
         return {"status": "❌ Secret غير صحيح"}
 
-    last_data = data  # حفظ آخر بيانات
+    last_data = data  # حفظ البيانات الأخيرة
 
     token = os.getenv("token")
     chat_id = os.getenv("chat_id")
@@ -36,7 +60,7 @@ async def send_post_to_telegram(request: Request):
 
     return {"status": "✅ تم الإرسال من POST"}
 
-# GET - يحصل على آخر بيانات
+# GET - لقراءة آخر رسالة
 @app.get("/last")
 async def get_last_data():
     global last_data
