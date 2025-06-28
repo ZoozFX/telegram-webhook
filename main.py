@@ -11,6 +11,7 @@ last_data = {}
 def build_message(data: dict) -> str:
     alert_type = data.get("alert", "unknown").lower()
 
+    # ✅ فتح صفقة شراء أو بيع
     if alert_type in ["buy_now", "sell_now"]:
         type_ = data.get("type", "buy").lower()
         price = float(data.get("price", "0"))
@@ -48,6 +49,7 @@ def build_message(data: dict) -> str:
 🛑 وقف خسارة: {stop_price:.2f}
 📊 Tickmill: {"✅" if data.get('Tickmill') else "❌"} | XM: {"✅" if data.get('xm') else "❌"}"""
 
+    # ✅ إغلاق الصفقة يدويًا
     elif alert_type == "close_now":
         return f"""🔴 تم إغلاق الصفقة يدويًا
 
@@ -56,12 +58,35 @@ def build_message(data: dict) -> str:
 📈 السعر: {data.get('price', 'N/A')}
 🔁 النوع: {data.get('type', 'N/A')}"""
 
+    # ✅ تحريك وقف الخسارة (TSL)
+    elif alert_type == "condition_move_tsl":
+        return f"""🔁 تحريك وقف الخسارة (TSL)
+
+🪙 الزوج: {data.get('symbol', 'N/A')}
+🆔 ID: {data.get('id', 'N/A')}
+✏️ التعديل: {data.get('edit', 'N/A')}
+📈 السعر الجديد: {data.get('price', 'N/A')}"""
+
+    # ✅ عرض جميع الصفقات المفتوحة
+    elif alert_type == "all_open":
+        return f"""📊 عرض كل الصفقات المفتوحة
+
+🪙 الزوج: {data.get('symbol', 'N/A')}"""
+
+    # ✅ جلب تفاصيل صفقة برقم ID
+    elif alert_type == "get_id":
+        return f"""📌 جلب بيانات الصفقة
+
+🪙 الزوج: {data.get('symbol', 'N/A')}
+🆔 ID: {data.get('id', 'N/A')}"""
+
+    # ⛔ تنبيهات غير معروفة
     else:
         return f"""📣 تنبيه: {data.get('alert', 'N/A')}
-📈 الزوج: {data.get('symbol', '؟')}
-💵 السعر: {data.get('price', '?')}"""
+🪙 الزوج: {data.get('symbol', '؟')}
+📈 السعر: {data.get('price', '?')}"""
 
-# POST - من TradingView
+# ✅ POST - استقبال بيانات من TradingView
 @app.post("/send")
 async def send_post_to_telegram(request: Request):
     global last_data
@@ -70,7 +95,7 @@ async def send_post_to_telegram(request: Request):
     if data.get("secret") != os.getenv("secret"):
         return {"status": "❌ Secret غير صحيح"}
 
-    last_data = data  # حفظ البيانات الأخيرة
+    last_data = data
 
     token = os.getenv("token")
     chat_id = os.getenv("chat_id")
@@ -84,7 +109,7 @@ async def send_post_to_telegram(request: Request):
 
     return {"status": "✅ تم الإرسال من POST"}
 
-# GET - لقراءة آخر رسالة
+# ✅ GET - إرسال آخر رسالة
 @app.get("/last")
 async def get_last_data():
     global last_data
