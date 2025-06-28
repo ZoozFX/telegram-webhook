@@ -11,18 +11,41 @@ last_data = {}
 def build_message(data: dict) -> str:
     alert_type = data.get("alert", "unknown").lower()
 
-    if alert_type == "buy_now" or alert_type == "sell_now":
+    if alert_type in ["buy_now", "sell_now"]:
+        type_ = data.get("type", "buy").lower()
+        price = float(data.get("price", "0"))
+
+        try:
+            tp1 = float(data.get("tp1", 0))
+            tp2 = float(data.get("tp2", 0))
+            tp3 = float(data.get("tp3", 0))
+            stop = float(data.get("stop", 0))
+        except:
+            tp1 = tp2 = tp3 = stop = 0
+
+        # حساب الأهداف كـ أسعار حقيقية
+        if type_ == "buy":
+            tp1_price = price + tp1 * 0.01
+            tp2_price = price + tp2 * 0.01
+            tp3_price = price + tp3 * 0.01
+            stop_price = price - stop * 0.01
+        else:
+            tp1_price = price - tp1 * 0.01
+            tp2_price = price - tp2 * 0.01
+            tp3_price = price - tp3 * 0.01
+            stop_price = price + stop * 0.01
+
         return f"""{"🟢" if alert_type == "buy_now" else "🔴"} فتح صفقة جديدة
 
 🔹 النوع: {data.get('type', 'N/A')}
 💼 اللوت: {data.get('lot', 'N/A')}
-📈 السعر: {data.get('price', 'N/A')}
+📈 السعر: {price:.2f}
 🪙 الزوج: {data.get('symbol', 'N/A')}
 
-🎯 TP1: {data.get('tp1', 'N/A')}
-🎯 TP2: {data.get('tp2', 'N/A')}
-🎯 TP3: {data.get('tp3', 'N/A')}
-🛑 وقف خسارة: {data.get('stop', 'N/A')}
+🎯 TP1: {tp1_price:.2f}
+🎯 TP2: {tp2_price:.2f}
+🎯 TP3: {tp3_price:.2f}
+🛑 وقف خسارة: {stop_price:.2f}
 📊 Tickmill: {"✅" if data.get('Tickmill') else "❌"} | XM: {"✅" if data.get('xm') else "❌"}"""
 
     elif alert_type == "close_now":
