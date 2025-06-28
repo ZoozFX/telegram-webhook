@@ -25,15 +25,15 @@ def build_message(data: dict) -> str:
 
         # حساب الأهداف كـ أسعار حقيقية
         if type_ == "buy":
-            tp1_price = price + tp1 * 0.01
-            tp2_price = price + tp2 * 0.01
-            tp3_price = price + tp3 * 0.01
-            stop_price = price - stop * 0.01
+            tp1_price = price + tp1 
+            tp2_price = price + tp2 
+            tp3_price = price + tp3 
+            stop_price = price - stop 
         else:
-            tp1_price = price - tp1 * 0.01
-            tp2_price = price - tp2 * 0.01
-            tp3_price = price - tp3 * 0.01
-            stop_price = price + stop * 0.01
+            tp1_price = price - tp1 
+            tp2_price = price - tp2 
+            tp3_price = price - tp3 
+            stop_price = price + stop 
 
         return f"""{"🟢" if alert_type == "buy_now" else "🔴"} فتح صفقة جديدة
 
