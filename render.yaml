@@ -1,14 +1,7 @@
-services:
-  - type: web
-    name: telegram-webhook
-    env: python
-    plan: free
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn main:app --host 0.0.0.0 --port 10000
-    envVars:
-      - key: token
-        value: 7570975386:AAG2Z2myM-w6fN00T7NugvraRPT5Rj9Yjso
-      - key: chat_id
-        value: -1002799925948
-      - key: secret
-        value: 8D81Yqh4lJbUsqGWpD9zCl1jQubexk
+envVars:
+  - key: token
+    sync: false
+  - key: chat_id
+    sync: false
+  - key: secret
+    sync: false
